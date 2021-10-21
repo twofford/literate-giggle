@@ -2,6 +2,8 @@ class DogsController < ApplicationController
   before_action :set_dog, only: [:show, :edit, :update, :destroy]
   before_action :verify_owner, only: [:edit, :update, :destroy]
 
+  # helper_method :liked, :likes
+
   # GET /dogs
   # GET /dogs.json
   def index
@@ -11,6 +13,8 @@ class DogsController < ApplicationController
   # GET /dogs/1
   # GET /dogs/1.json
   def show
+    @likeable = current_user && Like.where(user_id: current_user.id, dog_id: @dog.id).blank?
+    @likes = Like.where(dog_id: @dog.id)
   end
 
   # GET /dogs/new
@@ -73,14 +77,14 @@ class DogsController < ApplicationController
     @dog = Dog.find(params[:id])
   end
 
-  def is_owner?
-    current_user == @dog.owner
-  end
-
   def verify_owner
     unless current_user == @dog.owner
       redirect_to @dog, notice: "You are not this pup's owner. Please do not try to change or delete pups that are not yours."
     end
+  end
+
+  def likes
+    @likes = Like.where(dog_id: @dog.id)
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

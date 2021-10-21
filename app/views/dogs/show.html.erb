@@ -7,9 +7,26 @@
 
   <p><%= @dog.description %></p>
 
-  <% if current_user.id == @dog.user_id %>
+  <% if @likes.count == 0 %>
+    <p>No one has liked this pup yet. :-(</p>
+  <% elsif @likes.count == 1 %>
+    <p>One person likes this pup.</p>
+  <% else %>
+    <p><%= @likes.count %>people like this pup.</p>
+  <% end %>
+
+  <% if current_user && current_user.id == @dog.user_id %>
     <%= link_to "Edit #{@dog.name}'s Profile", edit_dog_path %>
     <br>
     <%= link_to "Delete #{@dog.name}'s Profile", dog_path, method: :delete, data: { confirm: 'Are you sure?' } %>
+  <% else %>
+    
+    <% if @likeable %>
+      <%= simple_form_for Like.new do |f| %>
+        <%= f.hidden_field :user_id, value: current_user.id %>
+        <%= f.hidden_field :dog_id, value: @dog.id %>
+        <%= f.submit 'Like this pup' %>
+      <% end %>
+    <% end %>
   <% end %>
 </section>
