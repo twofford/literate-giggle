@@ -1,5 +1,6 @@
 class DogsController < ApplicationController
   before_action :set_dog, only: [:show, :edit, :update, :destroy]
+  before_action :verify_owner, only: [:edit, :update, :destroy]
 
   # GET /dogs
   # GET /dogs.json
@@ -70,6 +71,16 @@ class DogsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_dog
     @dog = Dog.find(params[:id])
+  end
+
+  def is_owner?
+    current_user == @dog.owner
+  end
+
+  def verify_owner
+    unless current_user == @dog.owner
+      redirect_to @dog, notice: "You are not this pup's owner. Please do not try to change or delete pups that are not yours."
+    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
