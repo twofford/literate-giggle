@@ -2,5 +2,10 @@
   <%= f.select :sort, [["Default", "default"], ["Most likes in the last hour", "likes_last_hour"]], selected: params[:sort] %>
 <%= f.submit "Sort" %>
 <% end %>
-<%= render partial: 'thumbnail', collection: @dogs, as: :dog %>
+<% @dogs.each_with_index do |dog, index| %>
+  <%= render "dogs/thumbnail", dog: dog %>
+  <% if index % 2 != 0 %>
+    <%= image_tag("ad.jpg", alt: "Advertisement") %>
+  <% end %>
+<% end %>
 <%= will_paginate @dogs %>
