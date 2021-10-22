@@ -89,10 +89,6 @@ class DogsController < ApplicationController
     end
   end
 
-  def likes
-    @likes = Like.where(dog_id: @dog.id)
-  end
-
   # Never trust parameters from the scary internet, only allow the white list through.
   def dog_params
     params.require(:dog).permit(:name, :description, :user_id, :images => [])
