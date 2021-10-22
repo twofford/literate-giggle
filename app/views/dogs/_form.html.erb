@@ -1,7 +1,8 @@
 <%= simple_form_for @dog do |f| %>
   <%= f.input :name %>
   <%= f.input :description, as: :text %>
-  <%= f.file_field :images, multiple: true %>
+  <%= f.input :images, input_html: { multiple: true } %>
+  <%= f.input :user_id, as: :hidden, input_html: { value: current_user.id } %>
 
   <% if @dog.images.any? %>
     <%= image_tag @dog.images.first %>
