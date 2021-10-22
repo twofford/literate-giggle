@@ -1,2 +1,6 @@
+<%= form_with(url: dogs_path, method: :get, local: true) do |f| %>
+  <%= f.select :sort, [["Default", "default"], ["Most likes in the last hour", "likes_last_hour"]], selected: params[:sort] %>
+<%= f.submit "Sort" %>
+<% end %>
 <%= render partial: 'thumbnail', collection: @dogs, as: :dog %>
 <%= will_paginate @dogs %>

@@ -1,13 +1,19 @@
 class DogsController < ApplicationController
+  require "will_paginate/array"
+  
   before_action :set_dog, only: [:show, :edit, :update, :destroy]
   before_action :verify_owner, only: [:edit, :update, :destroy]
-
-  # helper_method :liked, :likes
 
   # GET /dogs
   # GET /dogs.json
   def index
-    @dogs = Dog.paginate(page: params[:page], per_page: 5)
+    if params[:sort] && params[:sort] == "likes_last_hour"
+      @dogs = Dog.all.sort_by { |dog| dog.likes.where(created_at: 1.hour.ago..Time.now).count }
+      .reverse
+    else
+      @dogs = Dog.all
+    end
+    @dogs = @dogs.paginate(page: params[:page], per_page: 5)
   end
 
   # GET /dogs/1
