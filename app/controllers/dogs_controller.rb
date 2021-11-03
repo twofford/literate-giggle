@@ -7,20 +7,39 @@ class DogsController < ApplicationController
   # GET /dogs
   # GET /dogs.json
   def index
+    start = Time.now
     if params[:sort] && params[:sort] == "likes_last_hour"
-      @dogs = Dog.all.sort_by { |dog| dog.likes.where(created_at: 1.hour.ago..Time.now).count }
-      .reverse
+      query = 
+        "SELECT * FROM dogs
+        LEFT JOIN (
+        SELECT likes.dog_id, COUNT(*) AS count FROM likes
+        WHERE likes.created_at > date('now', '-1 hour')
+        GROUP BY likes.dog_id
+        )
+        AS likes_last_hour ON dogs.id = likes_last_hour.dog_id
+        ORDER BY likes_last_hour.count DESC"
+        
+      @dogs = Dog.find_by_sql(query)
+      # @dogs = Dog.all.sort_by { |dog| dog.likes.where(created_at: 1.hour.ago..Time.now).count }
+      # .reverse
     else
       @dogs = Dog.all
     end
     @dogs = @dogs.paginate(page: params[:page], per_page: 5)
+    finish = Time.now
+    print "Hey! It took #{finish - start} seconds to run this query"
+
+    # With SQL on 10 dogs, operation takes 0.005423 seconds
+    # With sort_by on 10 dogs, operation takes 0.004679 seconds
+    # With SQL on 10,000 dogs, operation takes 0.003428 seconds
+    # With sort_by on 10,000 dogs, operation takes 0.006565 seconds
+    # SQL is 86% as fast when the table is small and 190% as fast when the table is large
   end
 
   # GET /dogs/1
   # GET /dogs/1.json
   def show
     @likeable = current_user && Like.where(user_id: current_user.id, dog_id: @dog.id).blank?
-    @likes = Like.where(dog_id: @dog.id)
   end
 
   # GET /dogs/new

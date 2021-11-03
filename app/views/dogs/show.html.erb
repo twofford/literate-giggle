@@ -7,12 +7,12 @@
 
   <p><%= @dog.description %></p>
 
-  <% if @likes.count == 0 %>
+  <% if @dog.likes.count == 0 %>
     <p>No one has liked this pup yet. :-(</p>
-  <% elsif @likes.count == 1 %>
+  <% elsif @dog.likes.count == 1 %>
     <p>One person likes this pup.</p>
   <% else %>
-    <p><%= @likes.count %>people like this pup.</p>
+    <p><%= @dog.likes.count %>people like this pup.</p>
   <% end %>
 
   <% if current_user && current_user.id == @dog.user_id %>
